@@ -28,7 +28,7 @@ import lrcParser from 'lrc-parser';
 import AsyncStorage from '@react-native-community/async-storage';
 const Stack = createStackNavigator();
 
-const App: () => React$Node = () => {
+const App = () => {
   // ---------------------------------------state管理---------------------------------------
   const [banner, setBanner] = useState([]);
   const [recommend, setRecommed] = useState([]);
@@ -233,6 +233,7 @@ const App: () => React$Node = () => {
       setLyric([{start: 0, text: '这首歌么有歌词呢...', end: 10000}]);
     }
   };
+  
   //---------------------------------------页面渲染前发送的请求---------------------------------
   useEffect(() => {
     indeximg();
