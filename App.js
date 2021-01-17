@@ -65,7 +65,6 @@ const App = () => {
   const storeCookie = async (value) => {
     try {
       await AsyncStorage.setItem('Cookie', value);
-      console.log('ok');
     } catch (e) {
       console.log(e);
     }
@@ -85,41 +84,101 @@ const App = () => {
       console.log(e);
     }
   };
+
+  const savaData = async (key, value) => {
+    try {
+      await AsyncStorage.setItem(key, value);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const getData = async (key) => {
+    try {
+      const value = await AsyncStorage.getItem(key);
+      if (value) {
+        const jsonValue = JSON.parse(value);
+        return jsonValue;
+      }
+    } catch (e) {
+      console.log('error');
+      return {};
+    }
+  };
+
   //-----------------------------------------请求管理----------------------------------------
   const indeximg = async () => {
-    const res = await fetch('http://139.196.141.233:3000/banner?type=1');
-    const data = await res.json();
-    setBanner(data.banners);
+    const banner = await getData('banner');
+    if (banner) {
+      setBanner(banner.banners);
+    } else {
+      const res = await fetch('http://139.196.141.233:3000/banner?type=1');
+      const data = await res.json();
+      setBanner(data.banners);
+      const value = JSON.stringify(data);
+      savaData('banner', value);
+    }
   };
   const recommendPlaylist = async () => {
-    const res = await fetch(
-      'http://139.196.141.233:3000/personalized?limits=12',
-    );
-    const data = await res.json();
-    setRecommed(data.result);
+    const dailyRecommend = await getData('dailyRecommend');
+    if (dailyRecommend) {
+      setRecommed(dailyRecommend.result);
+    } else {
+      const res = await fetch(
+        'http://139.196.141.233:3000/personalized?limits=12',
+      );
+      const data = await res.json();
+      setRecommed(data.result);
+    }
   };
   const topSongsAll = async () => {
-    const res = await fetch(
-      'http://139.196.141.233:3000/top/song?type=7&limits=12',
-    );
-    const data = await res.json();
-    setTopSongsCh(data.data);
-    const res1 = await fetch(
-      'http://139.196.141.233:3000/top/song?type=8&limits=12',
-    );
-    const data1 = await res1.json();
-    setTopSongsJp(data1.data);
+    const topChSong = await getData('topChSong');
+    const topJpSong = await getData('topJpSong');
+    if (topChSong && topJpSong) {
+      setTopSongsCh(topChSong.data);
+      setTopSongsJp(topJpSong.data);
+    } else {
+      const res = await fetch(
+        'http://139.196.141.233:3000/top/song?type=7&limits=12',
+      );
+      const data = await res.json();
+      setTopSongsCh(data.data);
+      const valueString = JSON.stringify(data);
+      savaData('topChSong', valueString);
+      const res1 = await fetch(
+        'http://139.196.141.233:3000/top/song?type=8&limits=12',
+      );
+      const data1 = await res1.json();
+      const valueString1 = JSON.stringify(data1);
+      setTopSongsJp(data1.data);
+      savaData('topJpSong', valueString1);
+    }
   };
   const hotPlaylistAll = async () => {
-    const res = await fetch(
-      'http://139.196.141.233:3000/top/playlist?limit=6&cat=%E5%8F%A4%E9%A3%8E',
-    );
-    const data = await res.json();
-    setHotPlaylistOld(data.playlists);
+    const hotlist = await getData('hotlist');
+    if (hotlist) {
+      setHotPlaylistOld(hotlist.playlists);
+    } else {
+      const res = await fetch(
+        'http://139.196.141.233:3000/top/playlist?limit=6&cat=%E5%8F%A4%E9%A3%8E',
+      );
+      const data = await res.json();
+      const valueString = JSON.stringify(data);
+      setHotPlaylistOld(data.playlists);
+      savaData('hotlist', valueString);
+    }
   };
   const RankingListAll = async () => {
-    const res = await fetch('http://139.196.141.233:3000/toplist');
-    const data = await res.json();
+    const rank = await getData('rank');
+    let data;
+    if (rank) {
+      data = rank;
+    } else {
+      const res = await fetch('http://139.196.141.233:3000/toplist');
+      data = await res.json();
+      const valueString = JSON.stringify(data);
+      savaData('rank', valueString);
+    }
     const playlist = data.list.slice(0, 3);
     setRanklist(playlist);
     const arr = [];
@@ -217,11 +276,18 @@ const App = () => {
     setLoginStatus({code: 301});
   };
   const recommendSongAll = async () => {
-    const res = await fetch(
-      `http://139.196.141.233:3000/recommend/songs?cookie=${cookie.current}`,
-    );
-    const data = await res.json();
-    setRecommendSongs(data.data.dailySongs);
+    const rcSongs = await getData('rcSongs');
+    if (rcSongs) {
+      setRecommendSongs(rcSongs.data.dailySongs);
+    } else {
+      const res = await fetch(
+        `http://139.196.141.233:3000/recommend/songs?cookie=${cookie.current}`,
+      );
+      const data = await res.json();
+      setRecommendSongs(data.data.dailySongs);
+      const valueString = JSON.stringify(data);
+      savaData('rcSongs', valueString);
+    }
   };
   const getLyric = async (id) => {
     const res = await fetch(`http://139.196.141.233:3000/lyric?id=${id}`);
@@ -233,7 +299,7 @@ const App = () => {
       setLyric([{start: 0, text: '这首歌么有歌词呢...', end: 10000}]);
     }
   };
-  
+
   //---------------------------------------页面渲染前发送的请求---------------------------------
   useEffect(() => {
     indeximg();

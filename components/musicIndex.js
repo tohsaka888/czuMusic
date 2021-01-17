@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useRef, useState} from 'react';
 import {
   View,
   Text,
@@ -25,6 +25,7 @@ const MusicIndex = ({
   navigation,
   playlistAll,
 }) => {
+  const [imgUrl, setImgUrl] = useState(0);
   const [refreshing, setRefreshing] = React.useState(false);
   const {recommendSongAll, loginStatus, setIsShown} = useContext(homeContext);
   const wait = (timeout) => {
@@ -43,41 +44,44 @@ const MusicIndex = ({
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }>
-      <View
-        style={{
-          marginTop: 10,
-          position: 'relative',
-          zIndex: -1,
-          backgroundColor: 'red',
-          height: 80,
-          width: mobileWidth,
-          borderTopLeftRadius: 15,
-          borderTopRightRadius: 15,
-          justifyContent: 'center',
-        }}
-      />
+      {banner.length !== 0 && (
+        <Image
+          blurRadius={100}
+          source={{uri: banner[imgUrl].pic}}
+          style={{
+            opacity: 0.3,
+            width: mobileWidth,
+            height: mobileWidth * 0.4,
+            position: 'relative',
+            zIndex: -100,
+          }}
+        />
+      )}
       <View
         style={{
           flex: 1,
-          padding: mobileWidth * 0.05,
+          paddingLeft: mobileWidth * 0.02,
+          paddingTop: mobileWidth * 0.02,
           position: 'absolute',
-          marginTop: 10,
         }}>
         <Carousel
+          afterChange={(index) => {
+            setImgUrl(index);
+          }}
           autoplay
           infinite
-          style={{height: mobileWidth * 0.3, width: mobileWidth * 0.9}}>
+          style={{height: mobileWidth * 0.35, width: mobileWidth * 0.96}}>
           {banner.map((item, index) => {
             return (
               <View
                 key={index}
-                style={{height: mobileWidth * 0.3, width: mobileWidth * 0.9}}>
+                style={{height: mobileWidth * 0.35, width: mobileWidth * 0.96}}>
                 <Image
                   resizeMode={'stretch'}
-                  source={{uri: item.pic}}
+                  source={{uri: item.pic, cache: 'force-cache'}}
                   style={{
-                    height: mobileWidth * 0.3,
-                    width: mobileWidth * 0.9,
+                    height: mobileWidth * 0.35,
+                    width: mobileWidth * 0.96,
                     borderRadius: 10,
                   }}
                 />
@@ -86,7 +90,7 @@ const MusicIndex = ({
           })}
         </Carousel>
       </View>
-      <View style={{marginTop: 80}}>
+      <View style={{marginTop: mobileWidth * 0.44, position: 'absolute'}}>
         <ScrollView
           horizontal
           style={{paddingLeft: mobileWidth * 0.05}}
@@ -237,7 +241,7 @@ const MusicIndex = ({
         style={{
           fontSize: 18,
           fontWeight: 'bold',
-          marginTop: 10,
+          marginTop: mobileWidth * 0.26,
           marginLeft: 10,
         }}>
         人气歌单推荐
@@ -259,7 +263,7 @@ const MusicIndex = ({
               <View style={{marginRight: 10}}>
                 <Image
                   borderRadius={5}
-                  source={{uri: item.picUrl}}
+                  source={{uri: item.picUrl, cache: 'force-cache'}}
                   style={{width: 100, height: 100}}
                 />
               </View>
@@ -276,7 +280,7 @@ const MusicIndex = ({
           );
         })}
       </ScrollView>
-      <View style={{marginTop: 10, marginLeft: 10}}>
+      <View style={{marginTop: 8, marginLeft: 10}}>
         <Text style={{fontSize: 18, fontWeight: 'bold'}}>
           优秀国语歌曲，不来听听嘛？
         </Text>
@@ -286,7 +290,7 @@ const MusicIndex = ({
               return (
                 <Flex key={index} style={{marginTop: 10}}>
                   <Image
-                    source={{uri: item.album.picUrl}}
+                    source={{uri: item.album.picUrl, cache: 'force-cache'}}
                     style={{width: 60, height: 60, borderRadius: 10}}
                   />
                   <View
@@ -334,7 +338,7 @@ const MusicIndex = ({
               return (
                 <Flex key={index} style={{marginTop: 10}}>
                   <Image
-                    source={{uri: item.album.picUrl}}
+                    source={{uri: item.album.picUrl, cache: 'force-cache'}}
                     style={{width: 60, height: 60, borderRadius: 10}}
                   />
                   <View
@@ -384,7 +388,7 @@ const MusicIndex = ({
               return (
                 <Flex key={index} style={{marginTop: 10}}>
                   <Image
-                    source={{uri: item.album.picUrl}}
+                    source={{uri: item.album.picUrl, cache: 'force-cache'}}
                     style={{width: 60, height: 60, borderRadius: 10}}
                   />
                   <View

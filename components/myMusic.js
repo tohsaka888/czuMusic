@@ -5,7 +5,6 @@ import {Flex, Modal, Button, Icon} from '@ant-design/react-native';
 import {mobileHeight, mobileWidth} from './mobileWidth';
 import ModalIndex from './modalIndex';
 import Playlist from './playlist';
-import AsyncStorage from '@react-native-community/async-storage';
 
 const MyMusic = ({navigation}) => {
   const {
@@ -19,15 +18,6 @@ const MyMusic = ({navigation}) => {
     setIsShown,
     removeCookie,
   } = useContext(homeContext);
-  const getAllKeys = async () => {
-    let keys = [];
-    try {
-      keys = await AsyncStorage.getAllKeys();
-    } catch (e) {
-      console.log(e);
-    }
-    console.log(keys);
-  };
 
   return (
     <View>

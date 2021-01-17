@@ -1,16 +1,15 @@
 import React, {useContext} from 'react';
-import {Text, View, Modal} from 'react-native';
+import {Text, View, Modal, TouchableOpacity} from 'react-native';
 import {Flex, Icon, Tabs} from '@ant-design/react-native';
 import MusicIndex from './musicIndex';
 import {homeContext} from './context';
-import {mobileHeight, mobileWidth} from './mobileWidth';
+import {mobileWidth} from './mobileWidth';
 import MyMusic from './myMusic';
 import MusicDetail from './musicDetail';
 import {ModalContext} from './context';
 
 const MusicHome = ({navigation}) => {
   const {
-    setSearchVisible,
     banner,
     setMusicUrl,
     recommend,
@@ -32,36 +31,41 @@ const MusicHome = ({navigation}) => {
       <Flex
         style={{
           width: mobileWidth,
-          backgroundColor: 'red',
+          backgroundColor: '#f9f9f9',
           paddingLeft: mobileWidth * 0.05,
           paddingRight: mobileWidth * 0.05,
           paddingTop: mobileWidth * 0.05,
-          paddingBottom: mobileWidth * 0.02,
+          paddingBottom: mobileWidth * 0.03,
           borderTopRightRadius: mobileWidth * 0.01,
           borderTopLeftRadius: mobileWidth * 0.01,
         }}
         align={'center'}
         justify={'center'}>
         <View
-          style={{width: mobileWidth * 0.1, marginLeft: mobileWidth * 0.02}}>
-          <Icon name={'menu'} color={'white'} style={{color: 'white'}} />
+          style={{width: mobileWidth * 0.08, marginLeft: mobileWidth * 0.04}}>
+          <Icon name={'menu'} color={'white'} style={{color: '#cecece'}} />
         </View>
-        <View style={{width: mobileWidth * 0.8}}>
-          <Text
-            style={{
-              textAlign: 'center',
-              color: 'white',
-              fontSize: 18,
-            }}>
-            常工云音乐
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('Search');
+          }}
+          style={{
+            width: mobileWidth * 0.8,
+            backgroundColor: 'white',
+            paddingTop: mobileWidth * 0.02,
+            paddingBottom: mobileWidth * 0.02,
+            borderRadius: 10,
+          }}>
+          <Text style={{fontSize: 16, marginLeft: mobileWidth * 0.02}}>
+            点击搜索···
           </Text>
-        </View>
+        </TouchableOpacity>
         <View
-          style={{width: mobileWidth * 0.1, marginRight: mobileWidth * 0.02}}>
+          style={{width: mobileWidth * 0.08, marginRight: mobileWidth * 0.04}}>
           <Icon
             name={'search'}
             color={'white'}
-            style={{color: 'white', textAlign: 'right'}}
+            style={{color: '#cecece', textAlign: 'right'}}
             onPress={() => {
               navigation.navigate('Search');
             }}
@@ -71,9 +75,9 @@ const MusicHome = ({navigation}) => {
       <Tabs
         distanceToChangeTab={0.5}
         tabBarInactiveTextColor={'#CECECE'}
-        tabBarActiveTextColor={'white'}
+        tabBarActiveTextColor={'black'}
         tabs={tabs}
-        tabBarBackgroundColor={'red'}
+        tabBarBackgroundColor={'#f9f9f9'}
         initialPage={1}
         renderUnderline={() => null}
         swipeable={false}

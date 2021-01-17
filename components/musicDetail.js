@@ -16,6 +16,9 @@ const MusicDetail = () => {
   const [showImg, setShowImg] = useState(true);
   const {navigation} = useContext(ModalContext);
   const musicRef = useRef();
+  const indexRef = useRef(-1);
+  const time = useRef(0);
+  const lastIndex = useRef(10000);
   const {
     setMusicShow,
     playerText,
@@ -34,15 +37,29 @@ const MusicDetail = () => {
       item.start <= currentTime.currentTime &&
       item.end >= currentTime.currentTime
     ) {
+      if(indexRef.current !== index) {
+        indexRef.current = index;
+        if (time.current === 0 && mobileHeight * 0.36 - index * 33 <= 0) {
+          lastIndex.current = lyric.length - index;
+          time.current = 1;
+        }
+        if (time.current === 1) {
+          lastIndex.current--;
+        }
+      }
       musicRef.current &&
-        musicRef.current.scrollToIndex({viewPosition: 0.5, index: index});
+        musicRef.current.scrollToIndex({
+          viewPosition: 0.5,
+          index: index,
+          animated: true,
+        });
       return (
         <Text
           style={{
             color: '#f9f9f9',
             textAlign: 'center',
-            lineHeight: 30,
-            fontSize: 18,
+            lineHeight: 33,
+            fontSize: 16,
           }}
           key={index}
           onPress={() => {
@@ -57,7 +74,7 @@ const MusicDetail = () => {
           style={{
             color: '#cecece',
             textAlign: 'center',
-            lineHeight: 30,
+            lineHeight: 33,
             fontSize: 16,
           }}
           key={index}
@@ -79,7 +96,7 @@ const MusicDetail = () => {
           position: 'absolute',
           resizeMode: 'stretch',
         }}
-        blurRadius={50}
+        blurRadius={150}
       />
       <Flex
         style={{
@@ -115,7 +132,7 @@ const MusicDetail = () => {
           alignContent: 'center',
           alignItems: 'center',
           display: showImg ? undefined : 'none',
-          marginBottom: mobileHeight * 0.2,
+          marginBottom: mobileHeight * 0.18,
         }}>
         <Image
           source={{uri: playerImg}}
@@ -129,13 +146,23 @@ const MusicDetail = () => {
       </TouchableOpacity>
       <TouchableOpacity
         style={{
-          height: mobileHeight * 0.8,
+          height: mobileHeight * 0.78,
           justifyContent: 'center',
           alignContent: 'center',
           alignItems: 'center',
           display: showImg === false ? undefined : 'none',
         }}>
         <FlatList
+          style={{
+            marginTop:
+              mobileHeight * 0.36 - indexRef.current * 33 < 0
+                ? 0
+                : mobileHeight * 0.36 - indexRef.current * 33,
+            marginBottom:
+              mobileHeight * 0.36 - lastIndex.current * 33 < 0
+                ? 0
+                : mobileHeight * 0.36 - lastIndex.current * 33,
+          }}
           data={lyric}
           showsVerticalScrollIndicator={false}
           renderItem={renderItem}
@@ -143,7 +170,7 @@ const MusicDetail = () => {
           keyExtractor={(item, index) => index.toString()}
           getItemLayout={(data, index) => ({
             length: lyric.length,
-            offset: index * 30,
+            offset: index * 33,
             index,
           })}
           contentContainerStyle={{
@@ -183,7 +210,7 @@ const MusicDetail = () => {
       <Icon
         name={playerIcon}
         style={{marginLeft: 'auto', marginRight: 'auto'}}
-        size={mobileWidth * 0.15}
+        size={mobileWidth * 0.1}
         onPress={() => {
           setPlayerIcon(
             playerIcon === 'pause-circle' ? 'play-circle' : 'pause-circle',
