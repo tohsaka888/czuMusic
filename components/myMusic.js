@@ -209,7 +209,6 @@ const MyMusic = ({navigation}) => {
         onPress={() => {
           logout();
           cookie.current = '';
-          getAllKeys();
           removeCookie();
         }}>
         <Text style={{color: 'white'}}>退出登录</Text>

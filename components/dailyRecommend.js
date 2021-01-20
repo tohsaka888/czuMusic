@@ -49,7 +49,7 @@ const DailyRecommend = ({navigation}) => {
           size={26}
           onPress={() => {
             GetMusicUrl(item.id);
-            setPlayerImg(item.album.picUrl);
+            setPlayerImg(item.al.picUrl);
             setPlayerText(item.name);
           }}
         />

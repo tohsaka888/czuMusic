@@ -26,6 +26,8 @@ import UserPlaylist from './components/userPlaylist';
 import MusicDetail from './components/musicDetail';
 import lrcParser from 'lrc-parser';
 import AsyncStorage from '@react-native-community/async-storage';
+import ToplistAll from './components/ToplistAll';
+import RankList from "./components/rankList";
 const Stack = createStackNavigator();
 
 const App = () => {
@@ -61,6 +63,10 @@ const App = () => {
   const [musicShow, setMusicShow] = useState(false);
   const [lyric, setLyric] = useState([]);
   const [songId, setSongId] = useState(0);
+  const [chToplist, setChToplist] = useState([]);
+  const [jpToplist, setJpToplist] = useState([]);
+  const [eouToplist, setEouToplist] = useState([]);
+  const [koToplist, setKoToplist] = useState([]);
   //-----------------------------------------本地缓存----------------------------------------
   const storeCookie = async (value) => {
     try {
@@ -299,7 +305,28 @@ const App = () => {
       setLyric([{start: 0, text: '这首歌么有歌词呢...', end: 10000}]);
     }
   };
-
+  const getplaylist = async () => {
+    const res = await fetch(
+      `http://139.196.141.233:3000/top/playlist/highquality?cat=华语`,
+    );
+    const data = await res.json();
+    setChToplist(data.playlists);
+    const res1 = await fetch(
+      `http://139.196.141.233:3000/top/playlist/highquality?cat=日语`,
+    );
+    const data1 = await res1.json();
+    setJpToplist(data1.playlists);
+    const res2 = await fetch(
+      `http://139.196.141.233:3000/top/playlist/highquality?cat=欧美`,
+    );
+    const data2 = await res2.json();
+    setEouToplist(data2.playlists);
+    const res3 = await fetch(
+      `http://139.196.141.233:3000/top/playlist/highquality?cat=ACG`,
+    );
+    const data3 = await res3.json();
+    setKoToplist(data3.playlists);
+  };
   //---------------------------------------页面渲染前发送的请求---------------------------------
   useEffect(() => {
     indeximg();
@@ -310,18 +337,14 @@ const App = () => {
     searchDefaultWords();
     hotSearchAll();
     isLogin();
+    getplaylist();
   }, [cookie.current]);
   useEffect(() => {
     if (currentTime.currentTime !== undefined) {
       setPlayValue(currentTime.currentTime / currentTime.seekableDuration);
     }
   }, [currentTime.currentTime, currentTime.seekableDuration]);
-  const tabs = [
-    {title: '我的'},
-    {title: '发现'},
-    {title: '云村'},
-    {title: '视频'},
-  ];
+  const tabs = [{title: '我的'}, {title: '发现'}, {title: '动态'}];
   return (
     <NavigationContainer>
       <homeContext.Provider
@@ -366,6 +389,10 @@ const App = () => {
           lyric,
           musicShow,
           removeCookie,
+          chToplist,
+          jpToplist,
+          eouToplist,
+          koToplist,
         }}>
         <Provider>
           <searchIndexContext.Provider
@@ -428,6 +455,16 @@ const App = () => {
                 options={{headerShown: false}}
               />
               <Stack.Screen name={'MusicDetail'} component={MusicDetail} />
+              <Stack.Screen
+                name={'ToplistAll'}
+                component={ToplistAll}
+                options={{title: '歌单精选'}}
+              />
+              <Stack.Screen
+                name={'RankList'}
+                component={RankList}
+                options={{title: '排行榜'}}
+              />
             </Stack.Navigator>
           </searchIndexContext.Provider>
           {musicUrl !== '' && (

@@ -1,4 +1,4 @@
-import React, {useContext, useRef, useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {
   View,
   Text,
@@ -10,6 +10,7 @@ import {
 import {Carousel, Flex, Icon} from '@ant-design/react-native';
 import {mobileWidth} from './mobileWidth';
 import {homeContext} from './context';
+import ToplistAll from './ToplistAll';
 
 const MusicIndex = ({
   banner,
@@ -130,10 +131,13 @@ const MusicIndex = ({
               每日推荐
             </Text>
           </View>
-          <View
+          <TouchableOpacity
             style={{
               width: mobileWidth * 0.14,
               marginRight: mobileWidth * 0.05,
+            }}
+            onPress={() => {
+              navigation.navigate('ToplistAll');
             }}>
             <View
               style={{
@@ -150,8 +154,11 @@ const MusicIndex = ({
             <Text style={{textAlign: 'center', fontSize: 12, marginTop: 5}}>
               歌单
             </Text>
-          </View>
-          <View
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('RankList');
+            }}
             style={{
               width: mobileWidth * 0.14,
               marginRight: mobileWidth * 0.05,
@@ -171,7 +178,7 @@ const MusicIndex = ({
             <Text style={{textAlign: 'center', fontSize: 12, marginTop: 5}}>
               排行榜
             </Text>
-          </View>
+          </TouchableOpacity>
           <View
             style={{
               width: mobileWidth * 0.14,

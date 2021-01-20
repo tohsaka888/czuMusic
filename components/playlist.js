@@ -18,7 +18,7 @@ const Playlist = ({navigation}) => {
   const renderItem = ({item, index}) => {
     return (
       <Flex
-        style={{width: mobileWidth, marginBottom: 20}}
+        style={{width: mobileWidth, marginBottom: mobileWidth * 0.1}}
         key={item.name}
         onPress={() => {
           GetMusicUrl(item.id);
@@ -175,7 +175,7 @@ const Playlist = ({navigation}) => {
             }}
           />
           <View
-            style={{height: mobileWidth * 0.05, backgroundColor: 'white'}}
+            style={{height: mobileWidth * 0.15, backgroundColor: 'white'}}
           />
         </View>
       )}

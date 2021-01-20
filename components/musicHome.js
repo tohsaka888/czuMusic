@@ -108,9 +108,6 @@ const MusicHome = ({navigation}) => {
         <View style={{height: 1000}} key={'cloud'}>
           <Text>开发中...下个版本上线，敬请期待...</Text>
         </View>
-        <View style={{height: 1000}} key={'video'}>
-          <Text>开发中...下个版本上线，敬请期待...</Text>
-        </View>
       </Tabs>
       <Modal
         visible={musicShow}
