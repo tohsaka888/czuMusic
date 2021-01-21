@@ -175,7 +175,7 @@ const Playlist = ({navigation}) => {
             }}
           />
           <View
-            style={{height: mobileWidth * 0.15, backgroundColor: 'white'}}
+            style={{height: mobileHeight * 0.03, backgroundColor: 'white'}}
           />
         </View>
       )}

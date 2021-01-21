@@ -25,6 +25,7 @@ const MusicHome = ({navigation}) => {
     playlistAll,
     musicShow,
     setMusicShow,
+    drawer,
   } = useContext(homeContext);
   return (
     <>
@@ -43,13 +44,22 @@ const MusicHome = ({navigation}) => {
         justify={'center'}>
         <View
           style={{width: mobileWidth * 0.08, marginLeft: mobileWidth * 0.04}}>
-          <Icon name={'menu'} color={'white'} style={{color: '#cecece'}} />
+          <Icon
+            name={'menu'}
+            color={'#cecece'}
+            style={{color: '#cecece'}}
+            onPress={() => {
+              drawer.current.openDrawer();
+            }}
+          />
         </View>
         <TouchableOpacity
           onPress={() => {
             navigation.navigate('Search');
           }}
           style={{
+            borderWidth: 1,
+            borderColor: "#cecece",
             width: mobileWidth * 0.8,
             backgroundColor: 'white',
             paddingTop: mobileWidth * 0.02,

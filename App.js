@@ -7,8 +7,8 @@
  */
 
 import React, {useEffect, useRef, useState} from 'react';
-import {View, Text, Animated, Image, TouchableOpacity} from 'react-native';
-import {Flex, Icon, Provider} from '@ant-design/react-native';
+import {View, Text, Animated, Image, TouchableOpacity, DrawerLayoutAndroid} from 'react-native';
+import {Flex, Icon, Provider, Button} from '@ant-design/react-native';
 import {Slider} from 'react-native-elements';
 import {homeContext} from './components/context';
 import MusicPlayer from './components/musicPlayer';
@@ -27,7 +27,7 @@ import MusicDetail from './components/musicDetail';
 import lrcParser from 'lrc-parser';
 import AsyncStorage from '@react-native-community/async-storage';
 import ToplistAll from './components/ToplistAll';
-import RankList from "./components/rankList";
+import RankList from './components/rankList';
 const Stack = createStackNavigator();
 
 const App = () => {
@@ -67,6 +67,7 @@ const App = () => {
   const [jpToplist, setJpToplist] = useState([]);
   const [eouToplist, setEouToplist] = useState([]);
   const [koToplist, setKoToplist] = useState([]);
+  const drawer = useRef();
   //-----------------------------------------本地缓存----------------------------------------
   const storeCookie = async (value) => {
     try {
@@ -345,230 +346,437 @@ const App = () => {
     }
   }, [currentTime.currentTime, currentTime.seekableDuration]);
   const tabs = [{title: '我的'}, {title: '发现'}, {title: '动态'}];
-  return (
-    <NavigationContainer>
-      <homeContext.Provider
-        value={{
-          setSearchVisible,
-          setPlayerText,
-          setPlayerImg,
-          setMusicUrl,
-          topSongsJp,
-          recommend,
-          ranklist,
-          rankdetail,
-          banner,
-          topSongsCh,
-          tabs,
-          hotPlaylistOld,
-          GetMusicUrl,
-          playlistAll,
-          playlist,
-          loginStatus,
-          searchVisible,
-          userDetail,
-          userPlaylist,
-          logout,
-          recommendSong,
-          recommendSongAll,
-          cookie,
-          setRecommendSongs,
-          isShown,
-          setIsShown,
-          setMusicShow,
-          playerText,
-          playerImg,
-          currentTime,
-          setChangeCurrentTime,
-          playValue,
-          setPlayValue,
-          setStop,
-          playerIcon,
-          setPlayerIcon,
-          getLyric,
-          lyric,
-          musicShow,
-          removeCookie,
-          chToplist,
-          jpToplist,
-          eouToplist,
-          koToplist,
-        }}>
-        <Provider>
-          <searchIndexContext.Provider
-            value={{
-              Stack,
-              setSearchVisible,
-              searchVisible,
-              defaultWords,
-              hotSearch,
-              search,
-              searchContent,
-              GetMusicUrl,
-              SongDetail,
-              phone,
-              setPhone,
-              password,
-              setPassword,
-              login,
-              userDetail,
-            }}>
-            <Stack.Navigator initialRouteName={'Home'}>
-              <Stack.Screen
-                name={'Home'}
-                component={MusicHome}
-                options={{headerTitle: null, headerStyle: {height: 0}}}
-              />
-              <Stack.Screen
-                name={'Search'}
-                component={MusicSearch}
-                options={{headerShown: false}}
-              />
-              <Stack.Screen
-                name={'Playlist'}
-                component={Playlist}
-                options={{headerShown: false}}
-              />
-              <Stack.Screen
-                name={'ModalIndex'}
-                component={ModalIndex}
-                options={{headerShown: false}}
-              />
-              <Stack.Screen
-                name={'ModalLogin'}
-                component={ModalLogin}
-                options={{
-                  headerStyle: {backgroundColor: 'red'},
-                  title: '手机号登陆',
-                  headerTitleStyle: {color: 'white'},
-                  headerBackTitleStyle: {color: 'white'},
-                }}
-              />
-              <Stack.Screen
-                name={'DailyRecommend'}
-                component={DailyRecommend}
-                options={{headerShown: false}}
-              />
-              <Stack.Screen
-                name={'UserPlaylist'}
-                component={UserPlaylist}
-                options={{headerShown: false}}
-              />
-              <Stack.Screen name={'MusicDetail'} component={MusicDetail} />
-              <Stack.Screen
-                name={'ToplistAll'}
-                component={ToplistAll}
-                options={{title: '歌单精选'}}
-              />
-              <Stack.Screen
-                name={'RankList'}
-                component={RankList}
-                options={{title: '排行榜'}}
-              />
-            </Stack.Navigator>
-          </searchIndexContext.Provider>
-          {musicUrl !== '' && (
-            <MusicPlayer
-              setCurrentTime={setCurrentTime}
-              musicUrl={musicUrl}
-              changeCurrentTime={changeCurrentTime}
-              playerIcon={playerIcon}
-              setPlayerIcon={setPlayerIcon}
-              stop={stop}
-              setStop={setStop}
-            />
-          )}
-          <TouchableOpacity
+  const renderView = () => {
+    return (
+      <View>
+        {loginStatus.profile && (
+          <Flex
             style={{
-              display: searchVisible,
-              alignItems: 'stretch',
-              justifyContent: 'center',
-              height: 80,
-              borderTopWidth: 1,
-              borderColor: '#cecece',
-              alignContent: 'center',
-            }}
-            onPress={() => {
-              if (musicUrl) {
-                setMusicShow(true);
-                getLyric(songId);
-              }
+              marginTop: mobileWidth * 0.1,
+              marginLeft: 'auto',
+              marginRight: 'auto',
             }}>
-            <Flex
+            <Image
+              source={{
+                uri: loginStatus.profile && loginStatus.profile.avatarUrl,
+              }}
               style={{
-                width: mobileWidth,
-                paddingLeft: mobileWidth * 0.05,
-                paddingRight: mobileWidth * 0.05,
+                width: mobileWidth * 0.2,
+                height: mobileWidth * 0.2,
+                borderRadius: mobileWidth * 0.2,
+              }}
+            />
+            <Text
+              style={{
+                fontSize: 18,
+                marginLeft: mobileWidth * 0.05,
+                fontWeight: 'bold',
               }}>
-              {playerImg === '' && (
+              {loginStatus.profile && loginStatus.profile.nickname}
+            </Text>
+          </Flex>
+        )}
+        {loginStatus.profile === undefined && (
+          <Flex
+            style={{
+              marginLeft: 'auto',
+              marginRight: 'auto',
+              marginTop: mobileWidth * 0.1,
+            }}>
+            <View
+              style={{
+                width: mobileWidth * 0.2,
+                height: mobileWidth * 0.2,
+                backgroundColor: '#cecece',
+                borderRadius: mobileWidth * 0.2,
+              }}
+            />
+            <Text
+              style={{
+                fontSize: 18,
+                marginLeft: mobileWidth * 0.05,
+                fontWeight: 'bold',
+              }}>
+              游客账户
+            </Text>
+          </Flex>
+        )}
+        <Flex
+          style={{
+            padding: mobileWidth * 0.05,
+            backgroundColor: '#f9f9f9',
+            margin: mobileWidth * 0.05,
+            marginTop: mobileWidth * 0.1,
+            borderRadius: 10,
+          }}>
+          <View
+            style={{
+              width: mobileWidth * 0.1,
+              height: mobileWidth * 0.1,
+              backgroundColor: 'red',
+              justifyContent: 'center',
+              alignContent: 'center',
+              alignItems: 'center',
+              borderRadius: mobileWidth * 0.2,
+            }}>
+            <Icon name={'calendar'} size={'md'} color={'white'} />
+          </View>
+          <View style={{flexWrap: 'nowrap'}}>
+            <Text
+              style={{
+                fontWeight: 'bold',
+                fontSize: 18,
+                marginLeft: mobileWidth * 0.05,
+              }}>
+              每日签到
+            </Text>
+          </View>
+        </Flex>
+        <Flex
+          style={{
+            padding: mobileWidth * 0.05,
+            backgroundColor: '#f9f9f9',
+            marginLeft: mobileWidth * 0.05,
+            marginRight: mobileWidth * 0.05,
+            borderRadius: 10,
+          }}>
+          <View
+            style={{
+              width: mobileWidth * 0.1,
+              height: mobileWidth * 0.1,
+              backgroundColor: 'red',
+              justifyContent: 'center',
+              alignContent: 'center',
+              alignItems: 'center',
+              borderRadius: mobileWidth * 0.2,
+            }}>
+            <Icon name={'team'} size={'md'} color={'white'} />
+          </View>
+          <View style={{flexWrap: 'nowrap'}}>
+            <Text
+              style={{
+                fontWeight: 'bold',
+                fontSize: 18,
+                marginLeft: mobileWidth * 0.05,
+              }}>
+              我的好友
+            </Text>
+          </View>
+        </Flex>
+        <Flex
+          style={{
+            padding: mobileWidth * 0.05,
+            marginLeft: mobileWidth * 0.05,
+            backgroundColor: '#f9f9f9',
+            borderRadius: 10,
+            marginRight: mobileWidth * 0.05,
+            marginTop: mobileWidth * 0.05,
+          }}>
+          <View
+            style={{
+              width: mobileWidth * 0.1,
+              height: mobileWidth * 0.1,
+              backgroundColor: 'red',
+              justifyContent: 'center',
+              alignContent: 'center',
+              alignItems: 'center',
+              borderRadius: mobileWidth * 0.2,
+            }}>
+            <Icon name={'setting'} size={'md'} color={'white'} />
+          </View>
+          <View style={{flexWrap: 'nowrap'}}>
+            <Text
+              style={{
+                fontWeight: 'bold',
+                fontSize: 18,
+                marginLeft: mobileWidth * 0.05,
+              }}>
+              常规设置
+            </Text>
+          </View>
+        </Flex>
+        <Flex
+          style={{
+            padding: mobileWidth * 0.05,
+            marginLeft: mobileWidth * 0.05,
+            backgroundColor: '#f9f9f9',
+            borderRadius: 10,
+            marginRight: mobileWidth * 0.05,
+            marginTop: mobileWidth * 0.05,
+          }}>
+          <View
+            style={{
+              width: mobileWidth * 0.1,
+              height: mobileWidth * 0.1,
+              backgroundColor: 'red',
+              justifyContent: 'center',
+              alignContent: 'center',
+              alignItems: 'center',
+              borderRadius: mobileWidth * 0.2,
+            }}>
+            <Icon name={'info'} size={'md'} color={'white'} />
+          </View>
+          <View style={{flexWrap: 'nowrap'}}>
+            <Text
+              style={{
+                fontWeight: 'bold',
+                fontSize: 18,
+                marginLeft: mobileWidth * 0.05,
+              }}>
+              关于应用
+            </Text>
+          </View>
+        </Flex>
+        <Button
+          style={{
+            borderRadius: 30,
+            backgroundColor: 'red',
+            width: mobileWidth * 0.7,
+            margin: mobileWidth * 0.05,
+            marginTop: mobileWidth * 0.15,
+          }}
+          onPress={() => {
+            logout();
+            cookie.current = '';
+            removeCookie();
+          }}>
+          <Text style={{color: 'white'}}>退出登录</Text>
+        </Button>
+      </View>
+    );
+  };
+  return (
+    <DrawerLayoutAndroid
+      ref={drawer}
+      renderNavigationView={renderView}
+      drawerWidth={mobileWidth * 0.8}>
+      <NavigationContainer>
+        <homeContext.Provider
+          value={{
+            setSearchVisible,
+            setPlayerText,
+            setPlayerImg,
+            setMusicUrl,
+            topSongsJp,
+            recommend,
+            ranklist,
+            rankdetail,
+            banner,
+            topSongsCh,
+            tabs,
+            hotPlaylistOld,
+            GetMusicUrl,
+            playlistAll,
+            playlist,
+            loginStatus,
+            searchVisible,
+            userDetail,
+            userPlaylist,
+            logout,
+            recommendSong,
+            recommendSongAll,
+            cookie,
+            setRecommendSongs,
+            isShown,
+            setIsShown,
+            setMusicShow,
+            playerText,
+            playerImg,
+            currentTime,
+            setChangeCurrentTime,
+            playValue,
+            setPlayValue,
+            setStop,
+            playerIcon,
+            setPlayerIcon,
+            getLyric,
+            lyric,
+            musicShow,
+            removeCookie,
+            chToplist,
+            jpToplist,
+            eouToplist,
+            koToplist,
+            drawer,
+          }}>
+          <Provider>
+            <searchIndexContext.Provider
+              value={{
+                Stack,
+                setSearchVisible,
+                searchVisible,
+                defaultWords,
+                hotSearch,
+                search,
+                searchContent,
+                GetMusicUrl,
+                SongDetail,
+                phone,
+                setPhone,
+                password,
+                setPassword,
+                login,
+                userDetail,
+              }}>
+              <Stack.Navigator initialRouteName={'Home'}>
+                <Stack.Screen
+                  name={'Home'}
+                  component={MusicHome}
+                  options={{headerTitle: null, headerStyle: {height: 0}}}
+                />
+                <Stack.Screen
+                  name={'Search'}
+                  component={MusicSearch}
+                  options={{headerShown: false}}
+                />
+                <Stack.Screen
+                  name={'Playlist'}
+                  component={Playlist}
+                  options={{headerShown: false}}
+                />
+                <Stack.Screen
+                  name={'ModalIndex'}
+                  component={ModalIndex}
+                  options={{headerShown: false}}
+                />
+                <Stack.Screen
+                  name={'ModalLogin'}
+                  component={ModalLogin}
+                  options={{
+                    headerStyle: {backgroundColor: 'red'},
+                    title: '手机号登陆',
+                    headerTitleStyle: {color: 'white'},
+                    headerBackTitleStyle: {color: 'white'},
+                  }}
+                />
+                <Stack.Screen
+                  name={'DailyRecommend'}
+                  component={DailyRecommend}
+                  options={{headerShown: false}}
+                />
+                <Stack.Screen
+                  name={'UserPlaylist'}
+                  component={UserPlaylist}
+                  options={{headerShown: false}}
+                />
+                <Stack.Screen name={'MusicDetail'} component={MusicDetail} />
+                <Stack.Screen
+                  name={'ToplistAll'}
+                  component={ToplistAll}
+                  options={{title: '歌单精选'}}
+                />
+                <Stack.Screen
+                  name={'RankList'}
+                  component={RankList}
+                  options={{title: '排行榜'}}
+                />
+              </Stack.Navigator>
+            </searchIndexContext.Provider>
+            {musicUrl !== '' && (
+              <MusicPlayer
+                setCurrentTime={setCurrentTime}
+                musicUrl={musicUrl}
+                changeCurrentTime={changeCurrentTime}
+                playerIcon={playerIcon}
+                setPlayerIcon={setPlayerIcon}
+                stop={stop}
+                setStop={setStop}
+              />
+            )}
+            <TouchableOpacity
+              style={{
+                display: searchVisible,
+                alignItems: 'stretch',
+                justifyContent: 'center',
+                height: 80,
+                borderTopWidth: 1,
+                borderColor: '#cecece',
+                alignContent: 'center',
+              }}
+              onPress={() => {
+                if (musicUrl) {
+                  setMusicShow(true);
+                  getLyric(songId);
+                }
+              }}>
+              <Flex
+                style={{
+                  width: mobileWidth,
+                  paddingLeft: mobileWidth * 0.05,
+                  paddingRight: mobileWidth * 0.05,
+                }}>
+                {playerImg === '' && (
+                  <View
+                    style={{
+                      width: mobileWidth * 0.15,
+                      height: mobileWidth * 0.15,
+                      borderRadius: mobileWidth * 0.15,
+                      backgroundColor: '#cecece',
+                    }}
+                  />
+                )}
+                {playerImg !== '' && (
+                  <Image
+                    source={{uri: playerImg}}
+                    style={{
+                      width: mobileWidth * 0.15,
+                      height: mobileWidth * 0.15,
+                      borderRadius: mobileWidth * 0.15,
+                    }}
+                  />
+                )}
                 <View
                   style={{
-                    width: mobileWidth * 0.15,
-                    height: mobileWidth * 0.15,
-                    borderRadius: mobileWidth * 0.15,
-                    backgroundColor: '#cecece',
+                    paddingTop: 12,
+                    width: mobileWidth * 0.6,
+                    marginLeft: mobileWidth * 0.02,
+                  }}>
+                  <Text>{playerText}</Text>
+                  <Slider
+                    value={playValue}
+                    onSlidingStart={(value) => {
+                      setStop(true);
+                    }}
+                    onSlidingComplete={(value) => {
+                      setChangeCurrentTime(
+                        value * currentTime.seekableDuration,
+                      );
+                      setPlayValue(value);
+                      setStop(false);
+                    }}
+                    thumbStyle={{
+                      height: 20,
+                      width: 20,
+                      backgroundColor: 'transparent',
+                    }}
+                    thumbProps={{
+                      Component: Animated.Image,
+                      source: {
+                        uri:
+                          'https://i0.hdslb.com/bfs/emote/70dc5c7b56f93eb61bddba11e28fb1d18fddcd4c.png@100w_100h.webp',
+                      },
+                    }}
+                  />
+                </View>
+                <Icon
+                  name={playerIcon}
+                  style={{marginLeft: mobileWidth * 0.02, flex: 1}}
+                  size={mobileWidth * 0.1}
+                  onPress={() => {
+                    setPlayerIcon(
+                      playerIcon === 'pause-circle'
+                        ? 'play-circle'
+                        : 'pause-circle',
+                    );
                   }}
                 />
-              )}
-              {playerImg !== '' && (
-                <Image
-                  source={{uri: playerImg}}
-                  style={{
-                    width: mobileWidth * 0.15,
-                    height: mobileWidth * 0.15,
-                    borderRadius: mobileWidth * 0.15,
-                  }}
-                />
-              )}
-              <View
-                style={{
-                  paddingTop: 12,
-                  width: mobileWidth * 0.6,
-                  marginLeft: mobileWidth * 0.02,
-                }}>
-                <Text>{playerText}</Text>
-                <Slider
-                  value={playValue}
-                  onSlidingStart={(value) => {
-                    setStop(true);
-                  }}
-                  onSlidingComplete={(value) => {
-                    setChangeCurrentTime(value * currentTime.seekableDuration);
-                    setPlayValue(value);
-                    setStop(false);
-                  }}
-                  thumbStyle={{
-                    height: 20,
-                    width: 20,
-                    backgroundColor: 'transparent',
-                  }}
-                  thumbProps={{
-                    Component: Animated.Image,
-                    source: {
-                      uri:
-                        'https://i0.hdslb.com/bfs/emote/70dc5c7b56f93eb61bddba11e28fb1d18fddcd4c.png@100w_100h.webp',
-                    },
-                  }}
-                />
-              </View>
-              <Icon
-                name={playerIcon}
-                style={{marginLeft: mobileWidth * 0.02, flex: 1}}
-                size={mobileWidth * 0.1}
-                onPress={() => {
-                  setPlayerIcon(
-                    playerIcon === 'pause-circle'
-                      ? 'play-circle'
-                      : 'pause-circle',
-                  );
-                }}
-              />
-            </Flex>
-          </TouchableOpacity>
-          {/*----------------------------------------搜索页-------搜索页--------------------------------------------*/}
-        </Provider>
-      </homeContext.Provider>
-    </NavigationContainer>
+              </Flex>
+            </TouchableOpacity>
+            {/*----------------------------------------搜索页-------搜索页--------------------------------------------*/}
+          </Provider>
+        </homeContext.Provider>
+      </NavigationContainer>
+    </DrawerLayoutAndroid>
   );
 };
 
