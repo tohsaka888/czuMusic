@@ -59,7 +59,7 @@ const MusicHome = ({navigation}) => {
           }}
           style={{
             borderWidth: 1,
-            borderColor: "#cecece",
+            borderColor: '#cecece',
             width: mobileWidth * 0.8,
             backgroundColor: 'white',
             paddingTop: mobileWidth * 0.02,

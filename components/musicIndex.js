@@ -28,7 +28,12 @@ const MusicIndex = ({
 }) => {
   const [imgUrl, setImgUrl] = useState(0);
   const [refreshing, setRefreshing] = React.useState(false);
-  const {recommendSongAll, loginStatus, setIsShown} = useContext(homeContext);
+  const {
+    recommendSongAll,
+    loginStatus,
+    setIsShown,
+    setSearchVisible,
+  } = useContext(homeContext);
   const wait = (timeout) => {
     return new Promise((resolve) => {
       setTimeout(resolve, timeout);
@@ -47,14 +52,14 @@ const MusicIndex = ({
       }>
       {banner.length !== 0 && (
         <Image
-          blurRadius={100}
+          blurRadius={1}
           source={{uri: banner[imgUrl].pic}}
           style={{
             opacity: 0.3,
             width: mobileWidth,
             height: mobileWidth * 0.4,
             position: 'relative',
-            zIndex: -100,
+            zIndex: -1,
           }}
         />
       )}
@@ -79,11 +84,13 @@ const MusicIndex = ({
                 style={{height: mobileWidth * 0.35, width: mobileWidth * 0.96}}>
                 <Image
                   resizeMode={'stretch'}
-                  source={{uri: item.pic, cache: 'force-cache'}}
+                  source={{uri: item.pic}}
                   style={{
                     height: mobileWidth * 0.35,
                     width: mobileWidth * 0.96,
                     borderRadius: 10,
+                    zIndex: 10,
+                    position: 'absolute',
                   }}
                 />
               </View>
@@ -107,6 +114,9 @@ const MusicIndex = ({
                 if (loginStatus.code === 200) {
                   recommendSongAll();
                   navigation.navigate('DailyRecommend');
+                }else{
+                  setSearchVisible('none');
+                  navigation.navigate('ModalIndex');
                 }
               }}
               style={{
@@ -126,6 +136,9 @@ const MusicIndex = ({
                 if (loginStatus.code === 200) {
                   recommendSongAll();
                   navigation.navigate('DailyRecommend');
+                } else {
+                  setSearchVisible('none');
+                  navigation.navigate('ModalIndex');
                 }
               }}>
               每日推荐
@@ -275,10 +288,9 @@ const MusicIndex = ({
                 />
               </View>
               <Text
+                numberOfLines={2}
                 style={{
                   width: 100,
-                  height: 38,
-                  overflow: 'hidden',
                   marginTop: 5,
                 }}>
                 {item.name}
@@ -512,10 +524,9 @@ const MusicIndex = ({
                 />
               </View>
               <Text
+                numberOfLines={2}
                 style={{
                   width: 100,
-                  height: 35,
-                  overflow: 'hidden',
                   marginTop: 5,
                 }}>
                 {item.name}

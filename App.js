@@ -7,7 +7,14 @@
  */
 
 import React, {useEffect, useRef, useState} from 'react';
-import {View, Text, Animated, Image, TouchableOpacity, DrawerLayoutAndroid} from 'react-native';
+import {
+  View,
+  Text,
+  Animated,
+  Image,
+  TouchableOpacity,
+  DrawerLayoutAndroid,
+} from 'react-native';
 import {Flex, Icon, Provider, Button} from '@ant-design/react-native';
 import {Slider} from 'react-native-elements';
 import {homeContext} from './components/context';
@@ -116,7 +123,7 @@ const App = () => {
   //-----------------------------------------请求管理----------------------------------------
   const indeximg = async () => {
     const banner = await getData('banner');
-    if (banner) {
+    if (banner !== undefined) {
       setBanner(banner.banners);
     } else {
       const res = await fetch('http://139.196.141.233:3000/banner?type=1');
@@ -128,20 +135,21 @@ const App = () => {
   };
   const recommendPlaylist = async () => {
     const dailyRecommend = await getData('dailyRecommend');
-    if (dailyRecommend) {
+    if (dailyRecommend !== undefined) {
       setRecommed(dailyRecommend.result);
     } else {
       const res = await fetch(
         'http://139.196.141.233:3000/personalized?limits=12',
       );
       const data = await res.json();
+      savaData('dailyRecommend',JSON.stringify(data));
       setRecommed(data.result);
     }
   };
   const topSongsAll = async () => {
     const topChSong = await getData('topChSong');
     const topJpSong = await getData('topJpSong');
-    if (topChSong && topJpSong) {
+    if (topChSong !== undefined && topJpSong !== undefined) {
       setTopSongsCh(topChSong.data);
       setTopSongsJp(topJpSong.data);
     } else {
@@ -163,7 +171,7 @@ const App = () => {
   };
   const hotPlaylistAll = async () => {
     const hotlist = await getData('hotlist');
-    if (hotlist) {
+    if (hotlist !== undefined) {
       setHotPlaylistOld(hotlist.playlists);
     } else {
       const res = await fetch(
@@ -178,7 +186,7 @@ const App = () => {
   const RankingListAll = async () => {
     const rank = await getData('rank');
     let data;
-    if (rank) {
+    if (rank !== undefined) {
       data = rank;
     } else {
       const res = await fetch('http://139.196.141.233:3000/toplist');
@@ -188,14 +196,19 @@ const App = () => {
     }
     const playlist = data.list.slice(0, 3);
     setRanklist(playlist);
-    const arr = [];
-    for (let i = 0; i < playlist.length; i++) {
-      const res = await fetch(
-        `http://139.196.141.233:3000/playlist/detail?id=${playlist[i].id}`,
-        {mode: 'cors'},
-      );
-      const data = await res.json();
-      arr[i] = data.playlist.tracks;
+    let arr = await getData('RankDetail');
+    if (arr === undefined) {
+      arr = [];
+      for (let i = 0; i < playlist.length; i++) {
+        const res = await fetch(
+          `http://139.196.141.233:3000/playlist/detail?id=${playlist[i].id}`,
+          {mode: 'cors'},
+        );
+        const data = await res.json();
+        arr[i] = data.playlist.tracks;
+      }
+      const valueString = JSON.stringify(arr);
+      savaData('RankDetail', valueString);
     }
     setRankdetail(arr);
   };
@@ -284,7 +297,7 @@ const App = () => {
   };
   const recommendSongAll = async () => {
     const rcSongs = await getData('rcSongs');
-    if (rcSongs) {
+    if (rcSongs !== undefined) {
       setRecommendSongs(rcSongs.data.dailySongs);
     } else {
       const res = await fetch(
@@ -308,22 +321,22 @@ const App = () => {
   };
   const getplaylist = async () => {
     const res = await fetch(
-      `http://139.196.141.233:3000/top/playlist/highquality?cat=华语`,
+      'http://139.196.141.233:3000/top/playlist/highquality?cat=华语',
     );
     const data = await res.json();
     setChToplist(data.playlists);
     const res1 = await fetch(
-      `http://139.196.141.233:3000/top/playlist/highquality?cat=日语`,
+      'http://139.196.141.233:3000/top/playlist/highquality?cat=日语',
     );
     const data1 = await res1.json();
     setJpToplist(data1.playlists);
     const res2 = await fetch(
-      `http://139.196.141.233:3000/top/playlist/highquality?cat=欧美`,
+      'http://139.196.141.233:3000/top/playlist/highquality?cat=欧美',
     );
     const data2 = await res2.json();
     setEouToplist(data2.playlists);
     const res3 = await fetch(
-      `http://139.196.141.233:3000/top/playlist/highquality?cat=ACG`,
+      'http://139.196.141.233:3000/top/playlist/highquality?cat=ACG',
     );
     const data3 = await res3.json();
     setKoToplist(data3.playlists);
