@@ -1,12 +1,13 @@
 import React, {useContext} from 'react';
-import {Text, View, Modal, TouchableOpacity} from 'react-native';
+import { Text, View, Modal, TouchableOpacity, Button, ImageBackground } from "react-native";
 import {Flex, Icon, Tabs} from '@ant-design/react-native';
 import MusicIndex from './musicIndex';
 import {homeContext} from './context';
-import {mobileWidth} from './mobileWidth';
+import {mobileWidth, mobileHeight} from './mobileWidth';
 import MyMusic from './myMusic';
 import MusicDetail from './musicDetail';
 import {ModalContext} from './context';
+import Trends from './Trends';
 
 const MusicHome = ({navigation}) => {
   const {
@@ -26,6 +27,8 @@ const MusicHome = ({navigation}) => {
     musicShow,
     setMusicShow,
     drawer,
+    loginStatus,
+    setSearchVisible,
   } = useContext(homeContext);
   return (
     <>
@@ -116,7 +119,41 @@ const MusicHome = ({navigation}) => {
         </View>
         {/*----------------------------------------主页------（屏幕2）-------------------------------------------*/}
         <View style={{height: 1000}} key={'cloud'}>
-          <Text>开发中...下个版本上线，敬请期待...</Text>
+          {loginStatus.code !== 200 && (
+            <View>
+              <ImageBackground
+                source={{
+                  uri: `https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic2.zhimg.com%2F50%2Fv2-e71854d52a38c2a112edc5a9633470b7_hd.jpg&refer=http%3A%2F%2Fpic2.zhimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1613962461&t=bbeb9788d134eca13ff6725b8624e830`,
+                }}
+                style={{width: mobileWidth, height: mobileHeight, position: "absolute"}}
+              />
+              <Text
+                style={{
+                  color: '#f9f9f9',
+                  textAlign: 'center',
+                  fontSize: 30,
+                  marginTop: mobileHeight * 0.2,
+                }}>
+                登陆后开启精彩世界！
+              </Text>
+              <View
+                style={{
+                  marginLeft: mobileWidth * 0.1,
+                  marginRight: mobileWidth * 0.1,
+                  marginTop: mobileWidth * 0.05,
+                }}>
+                <Button
+                  color={'red'}
+                  title={'立即登录'}
+                  onPress={() => {
+                    setSearchVisible('none');
+                    navigation.navigate('ModalIndex');
+                  }}
+                />
+              </View>
+            </View>
+          )}
+          {loginStatus.code === 200 && <Trends navigation={navigation} />}
         </View>
       </Tabs>
       <Modal

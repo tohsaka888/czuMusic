@@ -11,11 +11,15 @@ const Playlist = ({navigation}) => {
     GetMusicUrl,
     setPlayerText,
     setPlayerImg,
+    setPlayNext,
     isShown,
     getLyric,
     setMusicShow,
+    playNext,
+    loginStatus
   } = useContext(homeContext);
   const renderItem = ({item, index}) => {
+    // console.log(playlist.tracks[index + 1].id);
     return (
       <Flex
         style={{width: mobileWidth, marginBottom: mobileWidth * 0.1}}
@@ -26,6 +30,7 @@ const Playlist = ({navigation}) => {
           setPlayerText(item.name);
           getLyric(item.id);
           setMusicShow(true);
+          setPlayNext(index);
         }}>
         <Text style={{width: mobileWidth * 0.1, fontSize: 18}}>
           {index + 1}
@@ -53,6 +58,7 @@ const Playlist = ({navigation}) => {
           name={'play-circle'}
           size={26}
           onPress={() => {
+            setPlayNext(index);
             GetMusicUrl(item.id);
             setPlayerImg(item.al.picUrl);
             setPlayerText(item.name);

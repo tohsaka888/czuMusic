@@ -4,6 +4,7 @@ import {
   FlatList,
   Image,
   Text,
+  TouchableHighlight,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -31,13 +32,20 @@ const MusicDetail = () => {
     playerIcon,
     setPlayerIcon,
     lyric,
+    playlist,
+    playNext,
+    setPlayNext,
+    GetMusicUrl,
+    setPlayerImg,
+    setPlayerText,
+    getLyric,
   } = useContext(homeContext);
   const renderItem = ({item, index}) => {
     if (
       item.start <= currentTime.currentTime &&
       item.end >= currentTime.currentTime
     ) {
-      if(indexRef.current !== index) {
+      if (indexRef.current !== index) {
         indexRef.current = index;
         if (time.current === 0 && mobileHeight * 0.36 - index * 33 <= 0) {
           lastIndex.current = lyric.length - index;
@@ -207,16 +215,77 @@ const MusicDetail = () => {
           },
         }}
       />
-      <Icon
-        name={playerIcon}
-        style={{marginLeft: 'auto', marginRight: 'auto'}}
-        size={mobileWidth * 0.1}
-        onPress={() => {
-          setPlayerIcon(
-            playerIcon === 'pause-circle' ? 'play-circle' : 'pause-circle',
-          );
-        }}
-      />
+      <Flex wrap={'nowrap'} style={{marginLeft: 'auto', marginRight: 'auto'}}>
+        <TouchableHighlight
+          activeOpacity={0.6}
+          underlayColor="#DDDDDD"
+          onPress={() => alert('Pressed!')}>
+          <Icon
+            name={'step-backward'}
+            size={mobileWidth * 0.1}
+            onPress={() => {
+              if (playNext === -1 || playNext === 0) {
+                setPlayNext(0);
+                alert('已经是第一首啦！');
+              } else {
+                GetMusicUrl(playlist.tracks[playNext - 1].id);
+                setPlayNext(playNext - 1);
+                setPlayerImg(playlist.tracks[playNext - 1].al.picUrl);
+                setPlayerText(playlist.tracks[playNext - 1].name);
+                getLyric(playlist.tracks[playNext - 1].id);
+                setMusicShow(true);
+              }
+            }}
+          />
+        </TouchableHighlight>
+        <TouchableHighlight
+          activeOpacity={0.6}
+          underlayColor="red"
+          onPress={() => alert('Pressed!')}>
+          <View>
+            <Icon
+              style={{
+                marginLeft: mobileWidth * 0.05,
+                marginRight: mobileWidth * 0.05,
+              }}
+              name={playerIcon}
+              size={mobileWidth * 0.1}
+              onPress={() => {
+                setPlayerIcon(
+                  playerIcon === 'pause-circle'
+                    ? 'play-circle'
+                    : 'pause-circle',
+                );
+              }}
+            />
+          </View>
+        </TouchableHighlight>
+        <TouchableHighlight
+          activeOpacity={0.6}
+          underlayColor="#DDDDDD"
+          onPress={() => alert('Pressed!')}>
+          <Icon
+            name={'step-forward'}
+            size={mobileWidth * 0.1}
+            onPress={() => {
+              if (
+                playlist.tracks === undefined ||
+                playlist.tracks[playNext + 1] === undefined
+              ) {
+                setPlayNext(playNext);
+                alert('已经是最后一首了！');
+              } else {
+                GetMusicUrl(playlist.tracks[playNext + 1].id);
+                setPlayNext(playNext + 1);
+                setPlayerImg(playlist.tracks[playNext + 1].al.picUrl);
+                setPlayerText(playlist.tracks[playNext + 1].name);
+                getLyric(playlist.tracks[playNext + 1].id);
+                setMusicShow(true);
+              }
+            }}
+          />
+        </TouchableHighlight>
+      </Flex>
     </View>
   );
 };

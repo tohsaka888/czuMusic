@@ -74,6 +74,8 @@ const App = () => {
   const [jpToplist, setJpToplist] = useState([]);
   const [eouToplist, setEouToplist] = useState([]);
   const [koToplist, setKoToplist] = useState([]);
+  const [trends, setTrends] = useState([]);
+  const [playNext, setPlayNext] = useState(-1);
   const drawer = useRef();
   //-----------------------------------------本地缓存----------------------------------------
   const storeCookie = async (value) => {
@@ -142,7 +144,7 @@ const App = () => {
         'http://139.196.141.233:3000/personalized?limits=12',
       );
       const data = await res.json();
-      savaData('dailyRecommend',JSON.stringify(data));
+      savaData('dailyRecommend', JSON.stringify(data));
       setRecommed(data.result);
     }
   };
@@ -341,6 +343,13 @@ const App = () => {
     const data3 = await res3.json();
     setKoToplist(data3.playlists);
   };
+  const getTrends = async () => {
+    const res = await fetch(
+      'http://139.196.141.233:3000/event/?pagesize=30&lasttime=-1',
+    );
+    const data = await res.json();
+    setTrends(data.event);
+  };
   //---------------------------------------页面渲染前发送的请求---------------------------------
   useEffect(() => {
     indeximg();
@@ -352,6 +361,7 @@ const App = () => {
     hotSearchAll();
     isLogin();
     getplaylist();
+    getTrends();
   }, [cookie.current]);
   useEffect(() => {
     if (currentTime.currentTime !== undefined) {
@@ -566,6 +576,7 @@ const App = () => {
       <NavigationContainer>
         <homeContext.Provider
           value={{
+            trends,
             setSearchVisible,
             setPlayerText,
             setPlayerImg,
@@ -611,6 +622,8 @@ const App = () => {
             eouToplist,
             koToplist,
             drawer,
+            setPlayNext,
+            playNext,
           }}>
           <Provider>
             <searchIndexContext.Provider

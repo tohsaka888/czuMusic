@@ -114,7 +114,7 @@ const MusicIndex = ({
                 if (loginStatus.code === 200) {
                   recommendSongAll();
                   navigation.navigate('DailyRecommend');
-                }else{
+                } else {
                   setSearchVisible('none');
                   navigation.navigate('ModalIndex');
                 }
