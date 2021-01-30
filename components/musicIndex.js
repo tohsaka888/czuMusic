@@ -33,6 +33,7 @@ const MusicIndex = ({
     loginStatus,
     setIsShown,
     setSearchVisible,
+    dailySign,
   } = useContext(homeContext);
   const wait = (timeout) => {
     return new Promise((resolve) => {
@@ -192,7 +193,7 @@ const MusicIndex = ({
               排行榜
             </Text>
           </TouchableOpacity>
-          <View
+          <TouchableOpacity
             style={{
               width: mobileWidth * 0.14,
               marginRight: mobileWidth * 0.05,
@@ -207,13 +208,16 @@ const MusicIndex = ({
                 alignItems: 'center',
                 justifyContent: 'center',
               }}>
-              <Icon name={'camera'} size={'md'} color={'white'} />
+              <Icon name={'team'} size={'md'} color={'white'} />
             </View>
             <Text style={{textAlign: 'center', fontSize: 12, marginTop: 5}}>
-              直播
+              个人信息
             </Text>
-          </View>
-          <View
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={()=>{
+              dailySign();
+            }}
             style={{
               width: mobileWidth * 0.14,
               marginRight: mobileWidth * 0.05,
@@ -231,10 +235,10 @@ const MusicIndex = ({
               <Icon name={'compass'} size={'md'} color={'white'} />
             </View>
             <Text style={{textAlign: 'center', fontSize: 12, marginTop: 5}}>
-              电台
+              签到
             </Text>
-          </View>
-          <View
+          </TouchableOpacity>
+          {/* <View
             style={{
               width: mobileWidth * 0.14,
               marginRight: mobileWidth * 0.05,
@@ -254,7 +258,7 @@ const MusicIndex = ({
             <Text style={{textAlign: 'center', fontSize: 12, marginTop: 5}}>
               数字专辑
             </Text>
-          </View>
+          </View> */}
         </ScrollView>
       </View>
       <Text
